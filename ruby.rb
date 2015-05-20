@@ -4,7 +4,6 @@ require 'set'
 words = File.foreach('/usr/share/dict/words')
 
 WORDS_ALREADY_PLAYED = Set.new
-BLANK_BOARD = Array.new.fill("00000", 0..4).join(' ')
 
 def can_play_word(board, word)
   return false if WORDS_ALREADY_PLAYED.include?(word)
@@ -35,17 +34,15 @@ while request = s.gets
   p request
 
   case request
+    when /new game vs '(\w+)';/
+      opponent = $1
+      WORDS_ALREADY_PLAYED.clear
     when "ping" then
       s.puts "pong\n"
     when "; name ?\n" then
       s.puts "artistsAndRepertoire"
     when /(.*)? ; move ((?:[a-z]{5} ){5})((?:[0-2]{5} ){5})\?\n/
-      p "board: #{$2}"
-      p "state: #{$3}"
-      if $3.strip == BLANK_BOARD
-        puts "~~~~~ RESETTING WORDS PLAYED ~~~~"
-        WORDS_ALREADY_PLAYED.clear
-      end
+      p "[vs #{opponent}] board: #{$2} state: #{$3}"
       words.each do |word|
         word = word.chomp
         if (move = can_play_word($2, word))
