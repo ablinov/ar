@@ -6,8 +6,9 @@ words = File.read('/usr/share/dict/words').split("\n").
 
 WORDS_ALREADY_PLAYED = Set.new
 
-def can_play_word(board, word)
+def can_play_word(board, word, has_to_contain_letter)
   return false if WORDS_ALREADY_PLAYED.include?(word)
+  return false if !has_to_contain_letter.nil? and !word.include?(has_to_contain_letter)
   result = []
   result_word = ""
   board = board.gsub(/ /, "").chars
@@ -42,21 +43,33 @@ while request = s.gets
     when "ping" then
       s.puts "pong\n"
     when "; name ?\n" then
-      s.puts "artistsAndRepertoire"
+      s.puts "artistsAndRepertoire2"
     when /(?:opponent: move:[0-9,]* \(([a-z]+)\))? ; move ((?:[a-z]{5} ){5})((?:[0-2]{5} ){5})\?\n/
-      p "opponent's move: #{$1}"
+      opponent_word = $1
+      board = $2
+      state = $3
+
+      p "opponent's move: #{opponent_word}"
       if player_number.nil?
-        if ($1.nil? || $1.empty?)
+        if (opponent_word.nil? || opponent_word.empty?)
           player_number = 1
-        elsif $1.length >= 3
+        elsif opponent_word.length >= 3
           player_number = 2
         end
       end
-      p "[#{player_number} vs #{opponent}] board: #{$2} state: #{$3}"
-      WORDS_ALREADY_PLAYED << $1 unless $1.nil? or $1.empty?
+
+      p "[#{player_number} vs #{opponent}] board: #{board} state: #{state}"
+      board_array = board.gsub(/ /, "").chars
+      state_array = state.gsub(/ /, "").chars
+      has_to_contain_letter = nil
+      if state_array.count("0") == 1
+        has_to_contain_letter = board_array[state_array.index("0")]
+        puts "+=================== winning letter: #{has_to_contain_letter}"
+      end
+      WORDS_ALREADY_PLAYED << opponent_word unless opponent_word.nil? or opponent_word.empty?
       words.each do |word|
         word = word.chomp.downcase
-        if (move = can_play_word($2, word))
+        if (move = can_play_word(board, word, has_to_contain_letter))
           p "sending back: #{move}"
           s.puts move
           break
