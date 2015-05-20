@@ -1,17 +1,17 @@
-
 require 'socket'
 require 'set'
 
 words = File.foreach('/usr/share/dict/words')
 
 WORDS_ALREADY_PLAYED = Set.new
+BLANK_BOARD = Array.new.fill("00000", 0..4).join(' ')
 
 def can_play_word(board, word)
   return false if WORDS_ALREADY_PLAYED.include?(word)
   result = []
   result_word = ""
   board = board.gsub(/ /, "").chars
-  can_play = word.chars.all? do |c|
+  can_play = word.length > 3 && word.chars.all? do |c|
     i = board.index(c); i != nil and ()
     if i != nil
       row = i / 5
@@ -42,6 +42,10 @@ while request = s.gets
     when /(.*)? ; move ((?:[a-z]{5} ){5})((?:[0-2]{5} ){5})\?\n/
       p "board: #{$2}"
       p "state: #{$3}"
+      if $3.strip == BLANK_BOARD
+        puts "~~~~~ RESETTING WORDS PLAYED ~~~~"
+        WORDS_ALREADY_PLAYED.clear
+      end
       words.each do |word|
         word = word.chomp
         if (move = can_play_word($2, word))
