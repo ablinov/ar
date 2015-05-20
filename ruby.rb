@@ -46,7 +46,7 @@ while request = s.gets
       p "[vs #{opponent}] board: #{$2} state: #{$3}"
       WORDS_ALREADY_PLAYED << $1 unless $1.nil? or $1.empty?
       words.each do |word|
-        word = word.chomp
+        word = word.chomp.downcase
         if (move = can_play_word($2, word))
           p "sending back: #{move}"
           s.puts move
