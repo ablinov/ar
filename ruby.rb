@@ -1,7 +1,7 @@
 require 'socket'
 require 'set'
 
-words = File.foreach('/usr/share/dict/words')
+words = File.read('/usr/share/dict/words').split("\n").sort_by{|w| w.length * -1 }
 
 WORDS_ALREADY_PLAYED = Set.new
 
