@@ -10,7 +10,7 @@ def can_play_word(board, word)
   result = []
   result_word = ""
   board = board.gsub(/ /, "").chars
-  can_play = word.length > 3 && word.chars.all? do |c|
+  can_play = word.length >= 3 && word.chars.all? do |c|
     i = board.index(c)
     if i != nil
       row = i / 5
@@ -37,13 +37,21 @@ while request = s.gets
     when /new game vs '(\w+)';/
       opponent = $1
       WORDS_ALREADY_PLAYED.clear
+      player_number = nil
     when "ping" then
       s.puts "pong\n"
     when "; name ?\n" then
       s.puts "artistsAndRepertoire"
     when /(?:opponent: move:[0-9,]* \(([a-z]+)\))? ; move ((?:[a-z]{5} ){5})((?:[0-2]{5} ){5})\?\n/
       p "opponent's move: #{$1}"
-      p "[vs #{opponent}] board: #{$2} state: #{$3}"
+      if player_number.nil?
+        if ($1.nil? || $1.empty?)
+          player_number = 1
+        elsif $1.length >= 3
+          player_number = 2
+        end
+      end
+      p "[#{player_number} vs #{opponent}] board: #{$2} state: #{$3}"
       WORDS_ALREADY_PLAYED << $1 unless $1.nil? or $1.empty?
       words.each do |word|
         word = word.chomp.downcase
