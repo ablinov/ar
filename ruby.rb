@@ -1,7 +1,8 @@
 require 'socket'
 require 'set'
 
-words = File.read('/usr/share/dict/words').split("\n").sort_by{|w| w.length * -1 }
+words = File.read('/usr/share/dict/words').split("\n").
+  select  { |w| w =~ /^[a-z]{3,}$/ }
 
 WORDS_ALREADY_PLAYED = Set.new
 
