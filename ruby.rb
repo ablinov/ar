@@ -41,8 +41,10 @@ while request = s.gets
       s.puts "pong\n"
     when "; name ?\n" then
       s.puts "artistsAndRepertoire"
-    when /(.*)? ; move ((?:[a-z]{5} ){5})((?:[0-2]{5} ){5})\?\n/
+    when /(?:opponent: move:[0-9,]* \(([a-z]+)\))? ; move ((?:[a-z]{5} ){5})((?:[0-2]{5} ){5})\?\n/
+      p "opponent's move: #{$1}"
       p "[vs #{opponent}] board: #{$2} state: #{$3}"
+      WORDS_ALREADY_PLAYED << $1 unless $1.nil? or $1.empty?
       words.each do |word|
         word = word.chomp
         if (move = can_play_word($2, word))
