@@ -12,7 +12,7 @@ def can_play_word(board, word)
   result_word = ""
   board = board.gsub(/ /, "").chars
   can_play = word.length > 3 && word.chars.all? do |c|
-    i = board.index(c); i != nil and ()
+    i = board.index(c)
     if i != nil
       row = i / 5
       col = i % 5
